@@ -67,8 +67,6 @@ public class AppConfig {// implements CommandLineRunner {
 
     @PostConstruct
     public void post() {
-        Person person = Person.builder().personName("Rutu").birthDate("2022-07-12").build();
-        service.saveNewBirthdayPerson(person);
         try (FileReader reader = new FileReader(ResourceUtils.getFile("classpath:dummy/dummy.csv"));
              CSVReader csvReader = new CSVReaderBuilder(reader).withSkipLines(1).build()) {
             String[] lines;
