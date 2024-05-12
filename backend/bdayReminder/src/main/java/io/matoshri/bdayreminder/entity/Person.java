@@ -26,4 +26,8 @@ public class Person {
     @Column(name = "birth_date", length = 10, nullable = false)
     private String birthDate;
 
+    public String[] forCSV() {
+        String[] str = new String[]{this.personId.toString(), this.personName, this.birthDate};
+        return str;
+    }
 }

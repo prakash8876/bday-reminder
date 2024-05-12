@@ -4,12 +4,10 @@ import io.matoshri.bdayreminder.entity.Person;
 import io.matoshri.bdayreminder.exception.ApiException;
 import io.matoshri.bdayreminder.service.PersonService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
@@ -19,6 +17,7 @@ import java.util.concurrent.ExecutionException;
 public class PersonController {
 
     private final PersonService service;
+    private static List<Person> list = new ArrayList<>();
 
     @PostMapping("/save")
     Person saveNewBirthdayPerson(@RequestBody @Valid Person person) {
@@ -31,14 +30,63 @@ public class PersonController {
         return person1;
     }
 
-    @GetMapping("/app")
+    @GetMapping("/all")
     List<Person> findAll() {
-        List<Person> list;
         try {
             list = CompletableFuture.supplyAsync(() -> service.findAll()).get();
         } catch (InterruptedException | ExecutionException e) {
             throw new ApiException(e);
         }
         return list;
+    }
+
+    @GetMapping("/by/name/{personName}")
+    List<Person> findAllByPersonName(@PathVariable("personName") String personName) {
+        try {
+            list = CompletableFuture.supplyAsync(() -> service.findAllByPersonName(personName)).get();
+        } catch (InterruptedException | ExecutionException e) {
+            throw new ApiException(e);
+        }
+        return list;
+    }
+
+    @GetMapping("/by/date/{birthDate}")
+    List<Person> findAllByBirthDate(@PathVariable("birthDate") String birthDate) {
+        try {
+            list = CompletableFuture.supplyAsync(() -> service.findAllByBirthDate(birthDate)).get();
+        } catch (InterruptedException | ExecutionException e) {
+            throw new ApiException(e);
+        }
+        return list;
+    }
+
+    @GetMapping("/by/today")
+    List<Person> findAllByBirthDate() {
+        try {
+            list = CompletableFuture.supplyAsync(() -> service.findAllTodayBirthdayPersons()).get();
+        } catch (InterruptedException | ExecutionException e) {
+            throw new ApiException(e);
+        }
+        return list;
+    }
+
+    @GetMapping("/by/upcoming")
+    List<Person> findAllUpcomingBirthdayPersons() {
+        try {
+            list = CompletableFuture.supplyAsync(() -> service.findAllUpcomingBirthdayPersons()).get();
+        } catch (InterruptedException | ExecutionException e) {
+            throw new ApiException(e);
+        }
+        return list;
+    }
+
+    @GetMapping("/generate-csv")
+    void generateCSVFile() {
+        service.generateCSVFile();
+    }
+
+    @GetMapping("/generate-json")
+    void generateJSONFile() {
+        service.generateJSONFile();
     }
 }

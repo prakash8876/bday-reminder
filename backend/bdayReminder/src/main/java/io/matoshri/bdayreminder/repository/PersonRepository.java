@@ -7,5 +7,10 @@ import java.util.List;
 
 public interface PersonRepository extends JpaRepository<Person, Integer> {
     List<Person> findAllByPersonName(String personName);
+
     List<Person> findAllByBirthDate(String birthDate);
+
+    boolean existsByPersonName(String personName);
+
+    boolean existsByBirthDate(String birthDate);
 }

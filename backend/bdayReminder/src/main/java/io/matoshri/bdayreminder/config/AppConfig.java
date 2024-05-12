@@ -7,11 +7,7 @@ import io.matoshri.bdayreminder.entity.Person;
 import io.matoshri.bdayreminder.service.PersonService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.ApplicationArguments;
-import org.springframework.boot.ApplicationRunner;
-import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.util.ResourceUtils;
 
 import javax.annotation.PostConstruct;
 import java.io.FileNotFoundException;
@@ -66,8 +62,9 @@ public class AppConfig {// implements CommandLineRunner {
     }*/
 
     @PostConstruct
-    public void post() {
-        try (FileReader reader = new FileReader(ResourceUtils.getFile("classpath:dummy/dummy.csv"));
+    public void post() throws Exception {
+        String file = ClassLoader.getSystemResource("dummy/dummy.csv").getFile();
+        try (FileReader reader = new FileReader(file);
              CSVReader csvReader = new CSVReaderBuilder(reader).withSkipLines(1).build()) {
             String[] lines;
             while ((lines = csvReader.readNext()) != null) {
