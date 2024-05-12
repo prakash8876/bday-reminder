@@ -27,7 +27,6 @@ public class Person {
     private String birthDate;
 
     public String[] forCSV() {
-        String[] str = new String[]{this.personId.toString(), this.personName, this.birthDate};
-        return str;
+        return new String[]{this.personId.toString(), this.personName, this.birthDate};
     }
 }

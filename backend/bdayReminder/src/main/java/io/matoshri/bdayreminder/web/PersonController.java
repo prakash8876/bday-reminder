@@ -17,7 +17,7 @@ import java.util.concurrent.ExecutionException;
 public class PersonController {
 
     private final PersonService service;
-    private static List<Person> list = new ArrayList<>();
+    private List<Person> list = new ArrayList<>();
 
     @PostMapping("/save")
     Person saveNewBirthdayPerson(@RequestBody @Valid Person person) {
@@ -33,7 +33,7 @@ public class PersonController {
     @GetMapping("/all")
     List<Person> findAll() {
         try {
-            list = CompletableFuture.supplyAsync(() -> service.findAll()).get();
+            list = CompletableFuture.supplyAsync(service::findAll).get();
         } catch (InterruptedException | ExecutionException e) {
             throw new ApiException(e);
         }
@@ -63,7 +63,7 @@ public class PersonController {
     @GetMapping("/by/today")
     List<Person> findAllByBirthDate() {
         try {
-            list = CompletableFuture.supplyAsync(() -> service.findAllTodayBirthdayPersons()).get();
+            list = CompletableFuture.supplyAsync(service::findAllTodayBirthdayPersons).get();
         } catch (InterruptedException | ExecutionException e) {
             throw new ApiException(e);
         }
@@ -73,7 +73,7 @@ public class PersonController {
     @GetMapping("/by/upcoming")
     List<Person> findAllUpcomingBirthdayPersons() {
         try {
-            list = CompletableFuture.supplyAsync(() -> service.findAllUpcomingBirthdayPersons()).get();
+            list = CompletableFuture.supplyAsync(service::findAllUpcomingBirthdayPersons).get();
         } catch (InterruptedException | ExecutionException e) {
             throw new ApiException(e);
         }

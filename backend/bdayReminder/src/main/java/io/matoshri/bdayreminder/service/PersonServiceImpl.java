@@ -11,7 +11,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.io.File;
 import java.io.FileWriter;
 import java.io.Writer;
 import java.nio.file.Path;
@@ -20,7 +19,6 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static io.matoshri.bdayreminder.util.AppUtils.formatter;
 
 @Slf4j
 @Service
@@ -37,7 +35,7 @@ public class PersonServiceImpl implements PersonService {
         if (isPersonExists(person)) {
             return repo.findAllByPersonName(person.getPersonName()).get(0);
         }
-        String date = LocalDate.parse(person.getBirthDate()).format(formatter);
+        String date = LocalDate.parse(person.getBirthDate()).format(AppUtils.getFormatter());
         person.setBirthDate(date);
         return repo.save(person);
     }
@@ -57,14 +55,14 @@ public class PersonServiceImpl implements PersonService {
     @Override
     public List<Person> findAllByBirthDate(String birthDate) {
         log.info("finding all by birth date {}", birthDate);
-        String date = LocalDate.parse(birthDate).format(formatter);
+        String date = LocalDate.parse(birthDate).format(AppUtils.getFormatter());
         return repo.findAllByBirthDate(date).stream().distinct().collect(Collectors.toList());
     }
 
     @Override
     public List<Person> findAllTodayBirthdayPersons() {
         log.info("finding all today's birth persons");
-        String date = LocalDate.now().format(formatter);
+        String date = LocalDate.now().format(AppUtils.getFormatter());
         return findAllByBirthDate(date).stream().distinct().collect(Collectors.toList());
     }
 
@@ -73,13 +71,12 @@ public class PersonServiceImpl implements PersonService {
         log.info("finding all upcoming birthday persons");
         LocalDate localDate = LocalDate.now();
         int month = localDate.getMonth().getValue();
-        int dayOfMonth = localDate.getDayOfMonth();
         return findAll().stream()
                 .filter(person -> {
-                    LocalDate date = LocalDate.parse(person.getBirthDate(), formatter);
-                    return (month < date.getMonth().getValue() && dayOfMonth <= date.getDayOfMonth());
+                    LocalDate date = LocalDate.parse(person.getBirthDate(), AppUtils.getFormatter());
+                    return month < date.getMonth().getValue();
                 })
-                .sorted(Comparator.comparingInt(p -> LocalDate.parse(p.getBirthDate(), formatter).getMonth().getValue()))
+                .sorted(Comparator.comparingInt(p -> LocalDate.parse(p.getBirthDate(), AppUtils.getFormatter()).getMonth().getValue()))
                 .limit(5)
                 .collect(Collectors.toList());
     }
@@ -88,14 +85,12 @@ public class PersonServiceImpl implements PersonService {
     public void generateCSVFile() {
         log.info("Generating CSV file....");
         try {
-            Path filePath = AppUtils.getFilePath(AppUtils.CSV);
+            Path filePath = AppUtils.getFilePath(AppUtils.getCSVType());
             FileWriter fileWriter = new FileWriter(filePath.toFile());
             CSVWriter csvWriter = new CSVWriter(fileWriter);
-            csvWriter.writeNext(AppUtils.header, false);
+            csvWriter.writeNext(AppUtils.getHeader(), false);
             List<Person> all = findAll();
-            all.forEach(p -> {
-                csvWriter.writeNext(p.forCSV(), false);
-            });
+            all.forEach(p -> csvWriter.writeNext(p.forCSV(), false));
             fileWriter.close();
             log.info("CSV file generated at ", filePath);
         } catch (Exception e) {
@@ -107,7 +102,7 @@ public class PersonServiceImpl implements PersonService {
     public void generateJSONFile() {
         log.info("Generating JSON file....");
         List<Person> all = findAll();
-        try (Writer writer = new FileWriter(AppUtils.getFilePath(AppUtils.JSON).toFile())) {
+        try (Writer writer = new FileWriter(AppUtils.getFilePath(AppUtils.getJSONType()).toFile())) {
             Gson gson = new GsonBuilder().setPrettyPrinting().create();
             gson.toJson(all, writer);
         } catch (Exception e) {

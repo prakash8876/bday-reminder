@@ -11,11 +11,23 @@ import java.time.format.DateTimeFormatter;
 @Component
 public class AppUtils {
 
-    public final static DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd");
+    private AppUtils() {}
 
-    public final static String[] header = new String[]{"ID", "NAME", "DATE"};
-    public final static String CSV = ".csv";
-    public final static String JSON = ".json";
+    private static final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd");
+    private static final String[] HEADER = {"ID", "NAME", "DATE"};
+    private static final String CSV = ".csv";
+    private static final String JSON = ".json";
+
+    public static DateTimeFormatter getFormatter() {
+        return formatter;
+    }
+
+    public static String[] getHeader() {
+        return HEADER;
+    }
+
+    public static String getCSVType() { return CSV; }
+    public static String getJSONType() { return JSON; }
 
 
     public static Path getFilePath(String type) {

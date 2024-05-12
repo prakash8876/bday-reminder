@@ -16,50 +16,10 @@ import java.io.IOException;
 
 @Slf4j
 @Configuration
-public class AppConfig {// implements CommandLineRunner {
+public class AppConfig {
 
     @Autowired
     private PersonService service;
-
-    /*@Override
-    public void run(ApplicationArguments args) throws Exception {
-        Person person = Person.builder().personName("Rutu").birthDate("2022-07-12").build();
-        service.saveNewBirthdayPerson(person);
-        try (FileReader reader = new FileReader(ResourceUtils.getFile("classpath:dummy/dummy.csv"));
-             CSVReader csvReader = new CSVReaderBuilder(reader).withSkipLines(1).build()) {
-            String[] lines;
-            while ((lines = csvReader.readNext()) != null) {
-                Person newPerson = Person.builder().personName(lines[0]).birthDate(lines[1]).build();
-                service.saveNewBirthdayPerson(newPerson);
-            }
-        } catch (FileNotFoundException e) {
-            log.error("file not found", e);
-        } catch (IOException e) {
-            log.error("IOException", e);
-        } catch (CsvValidationException e) {
-            log.error("CSV Validation Exception", e);
-        }
-    }*/
-
-    /*@Override
-    public void run(String... args) throws Exception {
-        Person person = Person.builder().personName("Rutu").birthDate("2022-07-12").build();
-        service.saveNewBirthdayPerson(person);
-        try (FileReader reader = new FileReader(ResourceUtils.getFile("classpath:dummy/dummy.csv"));
-             CSVReader csvReader = new CSVReaderBuilder(reader).withSkipLines(1).build()) {
-            String[] lines;
-            while ((lines = csvReader.readNext()) != null) {
-                Person newPerson = Person.builder().personName(lines[0]).birthDate(lines[1]).build();
-                service.saveNewBirthdayPerson(newPerson);
-            }
-        } catch (FileNotFoundException e) {
-            log.error("file not found", e);
-        } catch (IOException e) {
-            log.error("IOException", e);
-        } catch (CsvValidationException e) {
-            log.error("CSV Validation Exception", e);
-        }
-    }*/
 
     @PostConstruct
     public void post() throws Exception {
