@@ -4,6 +4,7 @@ import io.matoshri.bdayreminder.entity.Person;
 import io.matoshri.bdayreminder.exception.ApiException;
 import io.matoshri.bdayreminder.service.PersonService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -20,6 +21,7 @@ public class PersonController {
     private List<Person> list = new ArrayList<>();
 
     @PostMapping("/save")
+    @ResponseStatus(HttpStatus.CREATED)
     Person saveNewBirthdayPerson(@RequestBody @Valid Person person) {
         Person person1;
         try {
@@ -31,6 +33,7 @@ public class PersonController {
     }
 
     @GetMapping("/all")
+    @ResponseStatus(HttpStatus.OK)
     List<Person> findAll() {
         try {
             list = CompletableFuture.supplyAsync(service::findAll).get();
@@ -41,6 +44,7 @@ public class PersonController {
     }
 
     @GetMapping("/by/name/{personName}")
+    @ResponseStatus(HttpStatus.OK)
     List<Person> findAllByPersonName(@PathVariable("personName") String personName) {
         try {
             list = CompletableFuture.supplyAsync(() -> service.findAllByPersonName(personName)).get();
@@ -51,6 +55,7 @@ public class PersonController {
     }
 
     @GetMapping("/by/date/{birthDate}")
+    @ResponseStatus(HttpStatus.OK)
     List<Person> findAllByBirthDate(@PathVariable("birthDate") String birthDate) {
         try {
             list = CompletableFuture.supplyAsync(() -> service.findAllByBirthDate(birthDate)).get();
@@ -61,6 +66,7 @@ public class PersonController {
     }
 
     @GetMapping("/by/today")
+    @ResponseStatus(HttpStatus.OK)
     List<Person> findAllByBirthDate() {
         try {
             list = CompletableFuture.supplyAsync(service::findAllTodayBirthdayPersons).get();
@@ -71,6 +77,7 @@ public class PersonController {
     }
 
     @GetMapping("/by/upcoming")
+    @ResponseStatus(HttpStatus.OK)
     List<Person> findAllUpcomingBirthdayPersons() {
         try {
             list = CompletableFuture.supplyAsync(service::findAllUpcomingBirthdayPersons).get();
@@ -81,11 +88,13 @@ public class PersonController {
     }
 
     @GetMapping("/generate-csv")
+    @ResponseStatus(HttpStatus.CREATED)
     void generateCSVFile() {
         service.generateCSVFile();
     }
 
     @GetMapping("/generate-json")
+    @ResponseStatus(HttpStatus.CREATED)
     void generateJSONFile() {
         service.generateJSONFile();
     }

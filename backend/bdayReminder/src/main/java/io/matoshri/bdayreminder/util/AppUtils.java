@@ -14,12 +14,17 @@ public class AppUtils {
     private AppUtils() {}
 
     private static final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd");
+    private static final DateTimeFormatter monthDay = DateTimeFormatter.ofPattern("MM/dd");
     private static final String[] HEADER = {"ID", "NAME", "DATE"};
     private static final String CSV = ".csv";
     private static final String JSON = ".json";
 
     public static DateTimeFormatter getFormatter() {
         return formatter;
+    }
+
+    public static DateTimeFormatter getMonthDay() {
+        return monthDay;
     }
 
     public static String[] getHeader() {

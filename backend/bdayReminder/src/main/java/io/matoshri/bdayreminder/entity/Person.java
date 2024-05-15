@@ -1,11 +1,14 @@
 package io.matoshri.bdayreminder.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import io.matoshri.bdayreminder.util.AppUtils;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import java.time.LocalDate;
 
 @Entity
 @Table(name = "PERSON")
@@ -28,5 +31,12 @@ public class Person {
 
     public String[] forCSV() {
         return new String[]{this.personId.toString(), this.personName, this.birthDate};
+    }
+
+    @JsonIgnore
+    public String getMonthDay() {
+        LocalDate localDate = LocalDate.parse(this.birthDate, AppUtils.getFormatter());
+        LocalDate ld = LocalDate.of(LocalDate.MIN.getYear(), localDate.getMonth(), localDate.getDayOfMonth());
+        return ld.format(AppUtils.getFormatter());
     }
 }
