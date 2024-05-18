@@ -14,11 +14,12 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
 @RestController
+@RequestMapping("/api/birthday")
 @RequiredArgsConstructor
 public class PersonController {
 
     private final PersonService service;
-    private List<Person> list = new ArrayList<>();
+    private List<Person> list;
 
     @PostMapping("/save")
     @ResponseStatus(HttpStatus.CREATED)
@@ -33,7 +34,6 @@ public class PersonController {
     }
 
     @GetMapping("/all")
-    @ResponseStatus(HttpStatus.OK)
     List<Person> findAll() {
         try {
             list = CompletableFuture.supplyAsync(service::findAll).get();
@@ -43,9 +43,8 @@ public class PersonController {
         return list;
     }
 
-    @GetMapping("/by/name/{personName}")
-    @ResponseStatus(HttpStatus.OK)
-    List<Person> findAllByPersonName(@PathVariable("personName") String personName) {
+    @GetMapping("/find-by-name/{personName}")
+    List<Person> findAllByPersonName(@PathVariable("personName") final String personName) {
         try {
             list = CompletableFuture.supplyAsync(() -> service.findAllByPersonName(personName)).get();
         } catch (InterruptedException | ExecutionException e) {
@@ -54,9 +53,8 @@ public class PersonController {
         return list;
     }
 
-    @GetMapping("/by/date/{birthDate}")
-    @ResponseStatus(HttpStatus.OK)
-    List<Person> findAllByBirthDate(@PathVariable("birthDate") String birthDate) {
+    @GetMapping("/find-by-date/{birthDate}")
+    List<Person> findAllByBirthDate(@PathVariable("birthDate") final String birthDate) {
         try {
             list = CompletableFuture.supplyAsync(() -> service.findAllByBirthDate(birthDate)).get();
         } catch (InterruptedException | ExecutionException e) {
@@ -65,8 +63,7 @@ public class PersonController {
         return list;
     }
 
-    @GetMapping("/by/today")
-    @ResponseStatus(HttpStatus.OK)
+    @GetMapping("/fetch-by-today")
     List<Person> findAllByBirthDate() {
         try {
             list = CompletableFuture.supplyAsync(service::findAllTodayBirthdayPersons).get();
@@ -76,8 +73,7 @@ public class PersonController {
         return list;
     }
 
-    @GetMapping("/by/upcoming")
-    @ResponseStatus(HttpStatus.OK)
+    @GetMapping("/fetch-by-upcoming")
     List<Person> findAllUpcomingBirthdayPersons() {
         try {
             list = CompletableFuture.supplyAsync(service::findAllUpcomingBirthdayPersons).get();

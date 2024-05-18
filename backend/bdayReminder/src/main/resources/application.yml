@@ -2,17 +2,21 @@ server:
   port: 8082
 spring:
   application:
-    name: birthday-reminder-application
+    name: 'birthday-reminder-application'
   datasource:
-    driverClassName: org.h2.Driver
-    url: jdbc:h2:mem:bdaydb
-    username: sa
-    password: password
+    driverClassName: 'org.h2.Driver'
+    url: 'jdbc:h2:mem:bdaydb'
+    username: 'sa'
+    password: 'password'
   jpa:
-    database-platform: org.hibernate.dialect.H2Dialect
+    database-platform: 'org.hibernate.dialect.H2Dialect'
     show-sql: true
     hibernate:
-      ddl-auto: update
+      ddl-auto: 'update'
   h2:
     console:
       enabled: true
+
+springdoc:
+  swagger-ui:
+    path: '/swagger-ui.html'

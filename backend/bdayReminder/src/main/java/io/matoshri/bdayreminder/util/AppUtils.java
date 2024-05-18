@@ -4,12 +4,18 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
 import java.io.File;
+import java.nio.file.Files;
 import java.nio.file.Path;
+import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
+import java.util.Optional;
 
 @Slf4j
 @Component
 public class AppUtils {
+
+    public static final String DEFAULT_DATE = "19910101";
 
     private AppUtils() {}
 
@@ -36,14 +42,29 @@ public class AppUtils {
 
 
     public static Path getFilePath(String type) {
-        File file = null;
+        Path path = null;
         try {
-            File path = new File("src/main/resources/dummy/data" + type);
-            path.createNewFile();
-            file = path;
+            String date = LocalDate.now().format(getFormatter());
+            path = Path.of("src/main/resources/dummy/",date + type);
+            if (!Files.exists(path)) {
+                Files.createFile(path);
+            }
         } catch (Exception e) {
             log.error("Exception", e);
         }
-        return Path.of(file.toURI());
+        return path;
+    }
+
+    public static Optional<String> validateDate(String birthDate) {
+        Optional<String> date = Optional.empty();
+        try {
+            if (Optional.ofNullable(birthDate).isPresent()) {
+                LocalDate localDate = LocalDate.parse(birthDate, getFormatter());
+                date = Optional.of(localDate.format(getFormatter()));
+            }
+        } catch (DateTimeParseException e) {
+            log.error("Invalid date", e);
+        }
+        return date;
     }
 }
