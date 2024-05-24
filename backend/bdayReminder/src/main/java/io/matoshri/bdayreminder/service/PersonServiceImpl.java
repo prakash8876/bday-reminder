@@ -32,7 +32,8 @@ import static io.matoshri.bdayreminder.util.AppUtils.DEFAULT_DATE;
 @RequiredArgsConstructor
 public class PersonServiceImpl implements PersonService {
 
-    private ReadWriteLock readWriteLock = new ReentrantReadWriteLock(true);
+    ReadWriteLock readWriteLock = new ReentrantReadWriteLock(true);
+    Gson gson = new GsonBuilder().setPrettyPrinting().create();
 
     private final PersonRepository repo;
 
@@ -41,7 +42,7 @@ public class PersonServiceImpl implements PersonService {
     public Person saveNewBirthdayPerson(Person person) {
         log.info("Saving new birthday person.... {}", person);
         if (isPersonExists(person)) {
-            return repo.findAllByPersonName(person.getPersonName()).get(0);
+            return person;
         }
         String date = AppUtils.validateDate(person.getBirthDate()).orElse(DEFAULT_DATE);
         person.setBirthDate(date);
@@ -51,17 +52,13 @@ public class PersonServiceImpl implements PersonService {
     @Override
     public List<Person> findAll() {
         log.info("finding all....");
-        return repo.findAll().stream()
-                .distinct()
-                .collect(Collectors.toList());
+        return repo.findAll();
     }
 
     @Override
     public List<Person> findAllByPersonName(String personName) {
         log.info("finding all by person name {}", personName);
-        return repo.findAllByPersonName(personName).stream()
-                .distinct()
-                .collect(Collectors.toList());
+        return repo.findAllByPersonName(personName);
     }
 
     @Override
@@ -69,7 +66,7 @@ public class PersonServiceImpl implements PersonService {
         log.info("finding all by birth date {}", birthDate);
         birthDate = AppUtils.validateDate(birthDate).orElse(DEFAULT_DATE);
         List<Person> collect = repo.findAllByBirthDate(birthDate);
-        return collect.parallelStream()
+        return collect.stream()
                 .sorted(Comparator
                         .comparing(Person::getPersonName))
                 .collect(Collectors.toList());
@@ -125,7 +122,6 @@ public class PersonServiceImpl implements PersonService {
         log.info("Generating JSON file....");
         List<Person> all = findAll();
         try (Writer writer = new FileWriter(AppUtils.getFilePath(AppUtils.getJSONType()).toFile())) {
-            Gson gson = new GsonBuilder().setPrettyPrinting().create();
             gson.toJson(all, writer);
         } catch (Exception e) {
             log.error("Exception", e);
@@ -137,7 +133,8 @@ public class PersonServiceImpl implements PersonService {
     private boolean isPersonExists(Person person) {
         String personName = person.getPersonName();
         String birthDate = AppUtils.validateDate(person.getBirthDate()).orElse(DEFAULT_DATE);
-        return (repo.existsByPersonName(personName) && repo.existsByBirthDate(birthDate));
+        return (repo.existsByPersonName(personName)
+                && repo.existsByBirthDate(birthDate));
     }
 
 }

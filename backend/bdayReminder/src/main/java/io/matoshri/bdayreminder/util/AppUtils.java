@@ -1,6 +1,7 @@
 package io.matoshri.bdayreminder.util;
 
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
 
 import java.io.File;
@@ -15,7 +16,7 @@ import java.util.Optional;
 @Component
 public class AppUtils {
 
-    public static final String DEFAULT_DATE = "19910101";
+    public static final String DEFAULT_DATE = "20001231";
 
     private AppUtils() {}
 
@@ -58,7 +59,7 @@ public class AppUtils {
     public static Optional<String> validateDate(String birthDate) {
         Optional<String> date = Optional.empty();
         try {
-            if (Optional.ofNullable(birthDate).isPresent()) {
+            if (StringUtils.isNotEmpty(birthDate)) {
                 LocalDate localDate = LocalDate.parse(birthDate, getFormatter());
                 date = Optional.of(localDate.format(getFormatter()));
             }
