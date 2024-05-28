@@ -11,7 +11,7 @@ import javax.persistence.*;
 import java.time.LocalDate;
 
 @Entity
-@Table(name = "PERSON")
+@Table(name = "PERSON_TBL")
 @Data
 @Builder
 @NoArgsConstructor
@@ -21,7 +21,7 @@ public class Person {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "person_id", unique = true, updatable = false)
-    private Integer personId;
+    private int personId;
 
     @Column(name = "person_name", length = 20, nullable = false)
     private String personName;
@@ -30,7 +30,7 @@ public class Person {
     private String birthDate;
 
     public String[] forCSV() {
-        return new String[]{this.personId.toString(), this.personName, this.birthDate};
+        return new String[]{Integer.toString(this.personId), this.personName, this.birthDate};
     }
 
     @JsonIgnore

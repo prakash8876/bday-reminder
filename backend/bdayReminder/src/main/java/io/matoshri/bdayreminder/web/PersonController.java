@@ -8,7 +8,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
@@ -16,6 +15,7 @@ import java.util.concurrent.ExecutionException;
 @RestController
 @RequestMapping("/api/birthday")
 @RequiredArgsConstructor
+@CrossOrigin(value = "http://localhost:4200")
 public class PersonController {
 
     private final PersonService service;

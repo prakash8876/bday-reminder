@@ -8,6 +8,7 @@ import java.util.List;
 
 @Repository
 public interface PersonRepository extends JpaRepository<Person, Integer> {
+
     List<Person> findAllByPersonName(String personName);
 
     List<Person> findAllByBirthDate(String birthDate);

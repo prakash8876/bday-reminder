@@ -17,10 +17,10 @@ import java.io.Writer;
 import java.nio.file.Path;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.Comparator;
-import java.util.List;
+import java.util.*;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 import static io.matoshri.bdayreminder.util.AppUtils.DEFAULT_DATE;
@@ -51,8 +51,9 @@ public class PersonServiceImpl implements PersonService {
 
     @Override
     public List<Person> findAll() {
-        log.info("finding all....");
-        return repo.findAll();
+        return repo.findAll().stream()
+                .sorted(Comparator.comparing(Person::getPersonName))
+                .collect(Collectors.toList());
     }
 
     @Override
@@ -64,11 +65,27 @@ public class PersonServiceImpl implements PersonService {
     @Override
     public List<Person> findAllByBirthDate(String birthDate) {
         log.info("finding all by birth date {}", birthDate);
+        List<Person> finalList = new LinkedList<>();
         birthDate = AppUtils.validateDate(birthDate).orElse(DEFAULT_DATE);
         List<Person> collect = repo.findAllByBirthDate(birthDate);
-        return collect.stream()
+        List<Person> matching = getAllMatchingDate(birthDate);
+        finalList.addAll(collect);
+        finalList.addAll(matching);
+        return finalList.stream()
                 .sorted(Comparator
                         .comparing(Person::getPersonName))
+                .collect(Collectors.toList());
+    }
+
+    private List<Person> getAllMatchingDate(String birthDate) {
+        LocalDate ld = LocalDate.parse(birthDate, AppUtils.getFormatter());
+        List<Person> all = findAll();
+        Predicate<Person> predicate = p -> {
+            LocalDate ild = LocalDate.parse(p.getBirthDate(), AppUtils.getFormatter());
+            return ld.getMonth().equals(ild.getMonth()) && ld.getDayOfMonth() == ild.getDayOfMonth();
+        };
+        return all.stream()
+                .filter(predicate)
                 .collect(Collectors.toList());
     }
 
@@ -101,7 +118,7 @@ public class PersonServiceImpl implements PersonService {
     @Override
     public void generateCSVFile() {
         readWriteLock.writeLock().lock();
-        log.info("Generating CSV file....");
+        log.info("Generating CSV file...., locaked");
         Path filePath = AppUtils.getFilePath(AppUtils.getCSVType());
         try (FileWriter fileWriter = new FileWriter(filePath.toFile(), false);
              CSVWriter csvWriter = new CSVWriter(fileWriter)) {
@@ -113,13 +130,14 @@ public class PersonServiceImpl implements PersonService {
             log.error("Exception while generating CSV file", e);
         } finally {
             readWriteLock.writeLock().unlock();
+            log.info("Generating csv file completed...., unlocked");
         }
     }
 
     @Override
     public void generateJSONFile() {
         readWriteLock.writeLock().lock();
-        log.info("Generating JSON file....");
+        log.info("Generating JSON file...., locked");
         List<Person> all = findAll();
         try (Writer writer = new FileWriter(AppUtils.getFilePath(AppUtils.getJSONType()).toFile())) {
             gson.toJson(all, writer);
@@ -127,6 +145,7 @@ public class PersonServiceImpl implements PersonService {
             log.error("Exception", e);
         } finally {
             readWriteLock.writeLock().unlock();
+            log.info("Generating JSON unlocked....");
         }
     }
 
