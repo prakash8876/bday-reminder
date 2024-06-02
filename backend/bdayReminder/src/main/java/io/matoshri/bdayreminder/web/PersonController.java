@@ -44,7 +44,7 @@ public class PersonController {
     }
 
     @GetMapping("/find-by-name/{personName}")
-    List<Person> findAllByPersonName(@PathVariable("personName") final String personName) {
+    List<Person> findAllByPersonName(@PathVariable("personName") String personName) {
         try {
             list = CompletableFuture.supplyAsync(() -> service.findAllByPersonName(personName)).get();
         } catch (InterruptedException | ExecutionException e) {
@@ -54,7 +54,7 @@ public class PersonController {
     }
 
     @GetMapping("/find-by-date/{birthDate}")
-    List<Person> findAllByBirthDate(@PathVariable("birthDate") final String birthDate) {
+    List<Person> findAllByBirthDate(@PathVariable("birthDate") String birthDate) {
         try {
             list = CompletableFuture.supplyAsync(() -> service.findAllByBirthDate(birthDate)).get();
         } catch (InterruptedException | ExecutionException e) {

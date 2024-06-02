@@ -2,10 +2,7 @@ package io.matoshri.bdayreminder.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.matoshri.bdayreminder.util.AppUtils;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import javax.persistence.*;
 import java.time.LocalDate;
@@ -16,6 +13,7 @@ import java.time.LocalDate;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@EqualsAndHashCode
 public class Person {
 
     @Id

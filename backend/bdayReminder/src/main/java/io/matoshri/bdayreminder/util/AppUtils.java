@@ -56,7 +56,7 @@ public class AppUtils {
         return path;
     }
 
-    public static Optional<String> validateDate(String birthDate) {
+    public static String validateDate(String birthDate) {
         Optional<String> date = Optional.empty();
         try {
             if (StringUtils.isNotEmpty(birthDate)) {
@@ -64,8 +64,8 @@ public class AppUtils {
                 date = Optional.of(localDate.format(getFormatter()));
             }
         } catch (DateTimeParseException e) {
-            log.error("Invalid date", e);
+            log.warn("{} is invalid date, enter proper date, exception {}", birthDate, e.getMessage());
         }
-        return date;
+        return date.orElse(DEFAULT_DATE);
     }
 }

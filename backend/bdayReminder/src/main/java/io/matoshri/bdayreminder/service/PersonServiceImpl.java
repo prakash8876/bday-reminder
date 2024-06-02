@@ -41,12 +41,17 @@ public class PersonServiceImpl implements PersonService {
     @Transactional
     public Person saveNewBirthdayPerson(Person person) {
         log.info("Saving new birthday person.... {}", person);
+        String date = AppUtils.validateDate(person.getBirthDate());
+        person.setBirthDate(date);
+
         if (isPersonExists(person)) {
             return person;
         }
-        String date = AppUtils.validateDate(person.getBirthDate()).orElse(DEFAULT_DATE);
-        person.setBirthDate(date);
-        return repo.save(person);
+
+        synchronized (this) {
+            person = repo.save(person);
+        }
+        return person;
     }
 
     @Override
@@ -66,7 +71,7 @@ public class PersonServiceImpl implements PersonService {
     public List<Person> findAllByBirthDate(String birthDate) {
         log.info("finding all by birth date {}", birthDate);
         List<Person> finalList = new LinkedList<>();
-        birthDate = AppUtils.validateDate(birthDate).orElse(DEFAULT_DATE);
+        birthDate = AppUtils.validateDate(birthDate);
         List<Person> collect = repo.findAllByBirthDate(birthDate);
         List<Person> matching = getAllMatchingDate(birthDate);
         finalList.addAll(collect);
@@ -102,16 +107,17 @@ public class PersonServiceImpl implements PersonService {
         LocalDate localDate = LocalDate.now().plusDays(1);
         int month = localDate.getMonth().getValue();
         int dayOfMonth = localDate.getDayOfMonth();
+        Predicate<Person> filter = person -> {
+            LocalDate date = LocalDate.parse(person.getBirthDate(), AppUtils.getFormatter());
+            return (month <= date.getMonth().getValue()
+                    && (dayOfMonth <= date.getDayOfMonth() || month != date.getMonth().getValue()));
+        };
         return findAll().stream()
-                .filter(person -> {
-                    LocalDate date = LocalDate.parse(person.getBirthDate(), AppUtils.getFormatter());
-                    return (month <= date.getMonth().getValue()
-                            && (dayOfMonth <= date.getDayOfMonth() || month != date.getMonth().getValue()));
-                })
+                .filter(filter)
                 .sorted(Comparator
                         .comparing(Person::getMonthDay)
                         .thenComparing(Person::getPersonName))
-                .limit(5)
+//                .limit(5)
                 .collect(Collectors.toList());
     }
 
@@ -151,7 +157,7 @@ public class PersonServiceImpl implements PersonService {
 
     private boolean isPersonExists(Person person) {
         String personName = person.getPersonName();
-        String birthDate = AppUtils.validateDate(person.getBirthDate()).orElse(DEFAULT_DATE);
+        String birthDate = AppUtils.validateDate(person.getBirthDate());
         return (repo.existsByPersonName(personName)
                 && repo.existsByBirthDate(birthDate));
     }
