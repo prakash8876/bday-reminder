@@ -1,5 +1,6 @@
 package io.matoshri.bdayreminder.util;
 
+import io.matoshri.bdayreminder.exception.DateParseException;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
@@ -8,6 +9,7 @@ import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.Optional;
@@ -58,12 +60,15 @@ public class AppUtils {
 
     public static String validateDate(String birthDate) {
         Optional<String> date = Optional.empty();
+        LocalDateTime localDateTime = LocalDateTime.now();
         try {
             if (StringUtils.isNotEmpty(birthDate)) {
                 LocalDate localDate = LocalDate.parse(birthDate, getFormatter());
+                if (localDate.isAfter(localDateTime.toLocalDate()))
+                    throw new DateParseException("Future date not allowed");
                 date = Optional.of(localDate.format(getFormatter()));
             }
-        } catch (DateTimeParseException e) {
+        } catch (DateParseException e) {
             log.warn("{} is invalid date, enter proper date, exception {}", birthDate, e.getMessage());
         }
         return date.orElse(DEFAULT_DATE);

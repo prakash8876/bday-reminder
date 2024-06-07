@@ -56,6 +56,12 @@ public class PersonServiceImpl implements PersonService {
 
     @Override
     public List<Person> findAll() {
+        try {
+            Thread.sleep(1000L);
+            log.info("findAll() called... {}", LocalDateTime.now());
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        }
         return repo.findAll().stream()
                 .sorted(Comparator.comparing(Person::getPersonName))
                 .collect(Collectors.toList());

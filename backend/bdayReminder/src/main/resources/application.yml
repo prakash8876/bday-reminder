@@ -10,7 +10,7 @@ spring:
     password: 'password'
   jpa:
     database-platform: 'org.hibernate.dialect.H2Dialect'
-    show-sql: true
+    show-sql: false
     hibernate:
       ddl-auto: 'update'
   h2:
@@ -20,3 +20,7 @@ spring:
 springdoc:
   swagger-ui:
     path: '/swagger-ui.html'
+
+logging:
+  level:
+    org.hibernate.SQL: DEBUG
