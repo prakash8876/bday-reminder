@@ -8,21 +8,23 @@ import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
 
-@Slf4j
 @Component
+@Slf4j
 public class ScheduleTask {
 
     @Autowired
-    private PersonService service;
+    PersonService service;
 
     @Scheduled(cron = "0 1 0 ? * *")
-    public void schedularTask() {
-      log.info("Schedular task started at {}", LocalDateTime.now());
+    public void schedulerTask() {
+        log.info("Scheduler task started at {}", LocalDateTime.now());
 
-      service.generateCSVFile();
-      service.generateJSONFile();
+        service.generateCSVFile();
+        service.generateJSONFile();
 
-      log.info("Schedular task ended at {}", LocalDateTime.now());
+        log.info("Scheduler task ended at {}", LocalDateTime.now());
     }
 
 }
+
+

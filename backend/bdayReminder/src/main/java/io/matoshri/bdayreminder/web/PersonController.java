@@ -1,9 +1,9 @@
 package io.matoshri.bdayreminder.web;
 
 import io.matoshri.bdayreminder.entity.Person;
-import io.matoshri.bdayreminder.exception.ApiException;
+import io.matoshri.bdayreminder.entity.PersonRequest;
 import io.matoshri.bdayreminder.service.PersonService;
-import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
@@ -14,82 +14,90 @@ import java.util.concurrent.ExecutionException;
 
 @RestController
 @RequestMapping("/api/birthday")
-@RequiredArgsConstructor
+@Slf4j
 @CrossOrigin(value = "http://localhost:4200")
 public class PersonController {
 
-    private final PersonService service;
-    private List<Person> list;
+    final PersonService service;
 
-    @PostMapping("/save")
-    @ResponseStatus(HttpStatus.CREATED)
-    Person saveNewBirthdayPerson(@RequestBody @Valid Person person) {
-        Person person1;
-        try {
-            person1 = CompletableFuture.supplyAsync(() -> service.saveNewBirthdayPerson(person)).get();
-        } catch (InterruptedException | ExecutionException e) {
-            throw new ApiException(e);
-        }
-        return person1;
+    public PersonController(PersonService service) {
+        this.service = service;
     }
 
-    @GetMapping("/all")
+    @PostMapping(value = "/save")
+    @ResponseStatus(HttpStatus.CREATED)
+    Person saveNewBirthdayPerson(@RequestBody @Valid PersonRequest personRequest) {
+        try {
+            return CompletableFuture.supplyAsync(() -> service.saveNewBirthdayPerson(personRequest)).get();
+        } catch (InterruptedException | ExecutionException e) {
+            log.warn("Interrupted!", e);
+            Thread.currentThread().interrupt();
+        }
+        return null;
+    }
+
+    @GetMapping(value = "/all")
     List<Person> findAll() {
         try {
-            list = CompletableFuture.supplyAsync(service::findAll).get();
+            return CompletableFuture.supplyAsync(service::findAll).get();
         } catch (InterruptedException | ExecutionException e) {
-            throw new ApiException(e);
+            log.warn("Interrupted!", e);
+            Thread.currentThread().interrupt();
         }
-        return list;
+        return null;
     }
 
-    @GetMapping("/find-by-name/{personName}")
+    @GetMapping(value = "/find-by-name/{personName}")
     List<Person> findAllByPersonName(@PathVariable("personName") String personName) {
         try {
-            list = CompletableFuture.supplyAsync(() -> service.findAllByPersonName(personName)).get();
+            return CompletableFuture.supplyAsync(() -> service.findAllByPersonName(personName)).get();
         } catch (InterruptedException | ExecutionException e) {
-            throw new ApiException(e);
+            log.warn("Interrupted!", e);
+            Thread.currentThread().interrupt();
         }
-        return list;
+        return null;
     }
 
-    @GetMapping("/find-by-date/{birthDate}")
+    @GetMapping(value = "/find-by-date/{birthDate}")
     List<Person> findAllByBirthDate(@PathVariable("birthDate") String birthDate) {
         try {
-            list = CompletableFuture.supplyAsync(() -> service.findAllByBirthDate(birthDate)).get();
+            return CompletableFuture.supplyAsync(() -> service.findAllByBirthDate(birthDate)).get();
         } catch (InterruptedException | ExecutionException e) {
-            throw new ApiException(e);
+            log.warn("Interrupted!", e);
+            Thread.currentThread().interrupt();
         }
-        return list;
+        return null;
     }
 
-    @GetMapping("/fetch-by-today")
+    @GetMapping(value = "/fetch-by-today")
     List<Person> findAllByBirthDate() {
         try {
-            list = CompletableFuture.supplyAsync(service::findAllTodayBirthdayPersons).get();
+            return CompletableFuture.supplyAsync(service::findAllTodayBirthdayPersons).get();
         } catch (InterruptedException | ExecutionException e) {
-            throw new ApiException(e);
+            log.warn("Interrupted!", e);
+            Thread.currentThread().interrupt();
         }
-        return list;
+        return null;
     }
 
-    @GetMapping("/fetch-by-upcoming")
+    @GetMapping(value = "/fetch-by-upcoming")
     List<Person> findAllUpcomingBirthdayPersons() {
         try {
-            list = CompletableFuture.supplyAsync(service::findAllUpcomingBirthdayPersons).get();
+            return CompletableFuture.supplyAsync(service::findAllUpcomingBirthdayPersons).get();
         } catch (InterruptedException | ExecutionException e) {
-            throw new ApiException(e);
+            log.warn("Interrupted!", e);
+            Thread.currentThread().interrupt();
         }
-        return list;
+        return null;
     }
 
-    @GetMapping("/generate-csv")
+    @GetMapping(value = "/generate-csv")
     @ResponseStatus(HttpStatus.CREATED)
     void generateCSVFile() {
         service.generateCSVFile();
     }
 
-    @GetMapping("/generate-json")
+    @GetMapping(value = "/generate-json")
     @ResponseStatus(HttpStatus.CREATED)
     void generateJSONFile() {
         service.generateJSONFile();

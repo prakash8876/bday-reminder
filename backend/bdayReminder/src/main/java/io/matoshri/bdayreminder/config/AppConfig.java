@@ -4,6 +4,7 @@ import com.opencsv.CSVReader;
 import com.opencsv.CSVReaderBuilder;
 import com.opencsv.exceptions.CsvValidationException;
 import io.matoshri.bdayreminder.entity.Person;
+import io.matoshri.bdayreminder.entity.PersonRequest;
 import io.matoshri.bdayreminder.service.PersonService;
 import io.matoshri.bdayreminder.util.AppUtils;
 import lombok.extern.slf4j.Slf4j;
@@ -22,15 +23,15 @@ import java.util.concurrent.Executor;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
-@Slf4j
 @Configuration
+@Slf4j
 public class AppConfig {
 
-    private ReadWriteLock readWriteLock = new ReentrantReadWriteLock(true);
+    ReadWriteLock readWriteLock = new ReentrantReadWriteLock(true);
 
-    private static final String PATTERN = "yyyy-MM-dd";
+    static final String PATTERN = "yyyy-MM-dd";
     @Autowired
-    private PersonService service;
+    PersonService service;
 
     @PostConstruct
     public void post() throws Exception {
@@ -43,9 +44,9 @@ public class AppConfig {
                 String name = lines[0];
                 LocalDate localDate = LocalDate.parse(lines[1], DateTimeFormatter.ofPattern(PATTERN));
                 String date = localDate.format(AppUtils.getFormatter());
-                Person newPerson = Person.builder().personName(name).birthDate(date).build();
+                PersonRequest request = new PersonRequest(0, name, date);
 
-                service.saveNewBirthdayPerson(newPerson);
+                service.saveNewBirthdayPerson(request);
             }
         } catch (FileNotFoundException e) {
             log.error("file not found", e);
