@@ -11,6 +11,8 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 public class BdayReminderApplication {
 
     public static void main(String[] args) {
+        System.setProperty("spring.output.ansi.enabled","always");
+        //--spring.output.ansi.enabled=ALWAYS
         SpringApplication.run(BdayReminderApplication.class, args);
     }
 
