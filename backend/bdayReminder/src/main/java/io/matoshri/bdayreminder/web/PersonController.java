@@ -37,6 +37,7 @@ public class PersonController {
     }
 
     @GetMapping(value = "/all")
+    @ResponseStatus(HttpStatus.OK)
     List<Person> findAll() {
         try {
             return CompletableFuture.supplyAsync(service::findAll).get();
@@ -48,6 +49,7 @@ public class PersonController {
     }
 
     @GetMapping(value = "/find-by-name/{personName}")
+    @ResponseStatus(HttpStatus.OK)
     List<Person> findAllByPersonName(@PathVariable("personName") String personName) {
         try {
             return CompletableFuture.supplyAsync(() -> service.findAllByPersonName(personName)).get();
@@ -59,6 +61,7 @@ public class PersonController {
     }
 
     @GetMapping(value = "/find-by-date/{birthDate}")
+    @ResponseStatus(HttpStatus.OK)
     List<Person> findAllByBirthDate(@PathVariable("birthDate") String birthDate) {
         try {
             return CompletableFuture.supplyAsync(() -> service.findAllByBirthDate(birthDate)).get();
@@ -70,6 +73,7 @@ public class PersonController {
     }
 
     @GetMapping(value = "/fetch-by-today")
+    @ResponseStatus(HttpStatus.OK)
     List<Person> findAllByBirthDate() {
         try {
             return CompletableFuture.supplyAsync(service::findAllTodayBirthdayPersons).get();
@@ -81,6 +85,7 @@ public class PersonController {
     }
 
     @GetMapping(value = "/fetch-by-upcoming")
+    @ResponseStatus(HttpStatus.OK)
     List<Person> findAllUpcomingBirthdayPersons() {
         try {
             return CompletableFuture.supplyAsync(service::findAllUpcomingBirthdayPersons).get();
