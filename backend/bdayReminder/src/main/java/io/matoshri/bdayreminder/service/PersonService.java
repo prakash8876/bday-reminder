@@ -41,8 +41,8 @@ public class PersonService {
 
     @Transactional
     public Person saveNewBirthdayPerson(PersonRequest personRequest) {
-        String date = AppUtils.validateDate(personRequest.getBirthDate());
-        Person newPerson = Person.builder()
+        var date = AppUtils.validateDate(personRequest.getBirthDate());
+        var newPerson = Person.builder()
                 .personName(personRequest.getPersonName())
                 .birthDate(date)
                 .build();
@@ -88,7 +88,7 @@ public class PersonService {
         LocalDate ld = LocalDate.parse(birthDate, AppUtils.getFormatter());
         List<Person> all = findAll();
         Predicate<Person> predicate = p -> {
-            LocalDate ild = LocalDate.parse(p.getBirthDate(), AppUtils.getFormatter());
+            var ild = LocalDate.parse(p.getBirthDate(), AppUtils.getFormatter());
             return ld.getMonth().equals(ild.getMonth()) && ld.getDayOfMonth() == ild.getDayOfMonth();
         };
         return all.stream()
@@ -97,7 +97,7 @@ public class PersonService {
     }
 
     public List<Person> findAllTodayBirthdayPersons() {
-        String date = LocalDate.now().format(AppUtils.getFormatter());
+        var date = LocalDate.now().format(AppUtils.getFormatter());
         return findAllByBirthDate(date);
     }
 
@@ -106,7 +106,7 @@ public class PersonService {
         int month = localDate.getMonth().getValue();
         int dayOfMonth = localDate.getDayOfMonth();
         Predicate<Person> filter = person -> {
-            LocalDate date = LocalDate.parse(person.getBirthDate(), AppUtils.getFormatter());
+            var date = LocalDate.parse(person.getBirthDate(), AppUtils.getFormatter());
             return (month <= date.getMonth().getValue()
                     && (dayOfMonth <= date.getDayOfMonth() || month != date.getMonth().getValue()));
         };
@@ -122,8 +122,8 @@ public class PersonService {
     public void generateCSVFile() {
         readWriteLock.writeLock().lock();
         Path filePath = AppUtils.getFilePath(AppUtils.getCSVType());
-        try (FileWriter fileWriter = new FileWriter(filePath.toFile(), false);
-             CSVWriter csvWriter = new CSVWriter(fileWriter)) {
+        try (FileWriter fileWriter = new FileWriter(filePath.toFile(), false)) {
+            CSVWriter csvWriter = new CSVWriter(fileWriter);
             csvWriter.writeNext(AppUtils.getHeader(), false);
             List<Person> all = findAll();
             all.forEach(p -> csvWriter.writeNext(p.forCSV(), false));
