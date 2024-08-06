@@ -3,7 +3,7 @@ package io.matoshri.bdayreminder.service;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.opencsv.CSVWriter;
-import io.matoshri.bdayreminder.entity.Person;
+import io.matoshri.bdayreminder.entity.PersonEntity;
 import io.matoshri.bdayreminder.entity.PersonRequest;
 import io.matoshri.bdayreminder.repository.PersonRepository;
 import io.matoshri.bdayreminder.util.AppUtils;
@@ -40,9 +40,9 @@ public class PersonService {
     }
 
     @Transactional
-    public Person saveNewBirthdayPerson(PersonRequest personRequest) {
+    public PersonEntity saveNewBirthdayPerson(PersonRequest personRequest) {
         var date = AppUtils.validateDate(personRequest.getBirthDate());
-        var newPerson = Person.builder()
+        var newPerson = PersonEntity.builder()
                 .personName(personRequest.getPersonName())
                 .birthDate(date)
                 .build();
@@ -51,43 +51,43 @@ public class PersonService {
         }
 
         synchronized (this) {
-            Person saved = repo.save(newPerson);
+            PersonEntity saved = repo.save(newPerson);
             log.info("new birthdate created {}", saved);
             return saved;
         }
     }
 
-    public List<Person> findAll() {
+    public List<PersonEntity> findAll() {
         try {
             TimeUnit.MILLISECONDS.sleep(3000L);
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
         }
         return repo.findAll().stream()
-                .sorted(Comparator.comparing(Person::getPersonName))
+                .sorted(Comparator.comparing(PersonEntity::getPersonName))
                 .collect(Collectors.toList());
     }
 
-    public List<Person> findAllByPersonName(String personName) {
+    public List<PersonEntity> findAllByPersonName(String personName) {
         return repo.findAllByPersonName(personName);
     }
 
-    public List<Person> findAllByBirthDate(String birthDate) {
-        List<Person> finalList = new LinkedList<>();
+    public List<PersonEntity> findAllByBirthDate(String birthDate) {
+        List<PersonEntity> finalList = new LinkedList<>();
         birthDate = AppUtils.validateDate(birthDate);
-        List<Person> collect = repo.findAllByBirthDate(birthDate);
-        List<Person> matching = getAllMatchingDate(birthDate);
+        List<PersonEntity> collect = repo.findAllByBirthDate(birthDate);
+        List<PersonEntity> matching = getAllMatchingDate(birthDate);
         finalList.addAll(collect);
         finalList.addAll(matching);
         return finalList.stream()
-                .sorted(Comparator.comparing(Person::getPersonName))
+                .sorted(Comparator.comparing(PersonEntity::getPersonName))
                 .collect(Collectors.toList());
     }
 
-    private List<Person> getAllMatchingDate(String birthDate) {
+    private List<PersonEntity> getAllMatchingDate(String birthDate) {
         LocalDate ld = LocalDate.parse(birthDate, AppUtils.getFormatter());
-        List<Person> all = findAll();
-        Predicate<Person> predicate = p -> {
+        List<PersonEntity> all = findAll();
+        Predicate<PersonEntity> predicate = p -> {
             var ild = LocalDate.parse(p.getBirthDate(), AppUtils.getFormatter());
             return ld.getMonth().equals(ild.getMonth()) && ld.getDayOfMonth() == ild.getDayOfMonth();
         };
@@ -96,16 +96,16 @@ public class PersonService {
                 .collect(Collectors.toList());
     }
 
-    public List<Person> findAllTodayBirthdayPersons() {
+    public List<PersonEntity> findAllTodayBirthdayPersons() {
         var date = LocalDate.now().format(AppUtils.getFormatter());
         return findAllByBirthDate(date);
     }
 
-    public List<Person> findAllUpcomingBirthdayPersons() {
+    public List<PersonEntity> findAllUpcomingBirthdayPersons() {
         LocalDate localDate = LocalDate.now().plusDays(1);
         int month = localDate.getMonth().getValue();
         int dayOfMonth = localDate.getDayOfMonth();
-        Predicate<Person> filter = person -> {
+        Predicate<PersonEntity> filter = person -> {
             var date = LocalDate.parse(person.getBirthDate(), AppUtils.getFormatter());
             return (month <= date.getMonth().getValue()
                     && (dayOfMonth <= date.getDayOfMonth() || month != date.getMonth().getValue()));
@@ -113,8 +113,8 @@ public class PersonService {
         return findAll().stream()
                 .filter(filter)
                 .sorted(Comparator
-                        .comparing(Person::getMonthDay)
-                        .thenComparing(Person::getPersonName))
+                        .comparing(PersonEntity::getMonthDay)
+                        .thenComparing(PersonEntity::getPersonName))
                 .limit(10)
                 .collect(Collectors.toList());
     }
@@ -125,7 +125,7 @@ public class PersonService {
         try (FileWriter fileWriter = new FileWriter(filePath.toFile(), false)) {
             CSVWriter csvWriter = new CSVWriter(fileWriter);
             csvWriter.writeNext(AppUtils.getHeader(), false);
-            List<Person> all = findAll();
+            List<PersonEntity> all = findAll();
             all.forEach(p -> csvWriter.writeNext(p.forCSV(), false));
             log.info("CSV file generated at {}", filePath);
         } catch (Exception e) {
@@ -138,7 +138,7 @@ public class PersonService {
     public void generateJSONFile() {
         readWriteLock.writeLock().lock();
         try (Writer writer = new FileWriter(AppUtils.getFilePath(AppUtils.getJSONType()).toFile())) {
-            List<Person> all = findAll();
+            List<PersonEntity> all = findAll();
             gson.toJson(all, writer);
             log.info("JSON file generate....");
         } catch (Exception e) {
@@ -148,7 +148,7 @@ public class PersonService {
         }
     }
 
-    private boolean isPersonExists(Person person) {
+    private boolean isPersonExists(PersonEntity person) {
         String personName = person.getPersonName();
         String birthDate = AppUtils.validateDate(person.getBirthDate());
         return repo.existsByPersonName(personName) && repo.existsByBirthDate(birthDate);

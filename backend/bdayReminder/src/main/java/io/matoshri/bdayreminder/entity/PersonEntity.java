@@ -16,19 +16,19 @@ import java.util.Objects;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class Person {
+public class PersonEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "person_id", unique = true, updatable = false)
+    @Column(name = "PERSON_ID", unique = true, updatable = false)
     @Getter
     private int personId;
 
-    @Column(name = "person_name", length = 20, nullable = false)
+    @Column(name = "PERSON_NAME", length = 20, nullable = false)
     @Getter
     private String personName;
 
-    @Column(name = "birth_date", length = 10, nullable = false)
+    @Column(name = "BIRTH_DATE", length = 10, nullable = false)
     @Getter
     private String birthDate;
 
@@ -46,18 +46,18 @@ public class Person {
     @Override
     public String toString() {
         return "Person{" +
-                "personId=" + personId +
-                ", personName='" + personName + '\'' +
-                ", birthDate='" + birthDate + '\'' +
+                "Id=" + personId +
+                ", Name='" + personName + '\'' +
+                ", birth Date='" + birthDate + '\'' +
                 '}';
     }
 
     @Override
     public final boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof Person)) return false;
+        if (!(o instanceof PersonEntity)) return false;
 
-        Person person = (Person) o;
+        PersonEntity person = (PersonEntity) o;
         return Objects.equals(personName, person.personName) && Objects.equals(birthDate, person.birthDate);
     }
 

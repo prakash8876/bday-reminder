@@ -1,15 +1,15 @@
 package io.matoshri.bdayreminder.repository;
 
-import io.matoshri.bdayreminder.entity.Person;
+import io.matoshri.bdayreminder.entity.PersonEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
 
-public interface PersonRepository extends JpaRepository<Person, Integer> {
+public interface PersonRepository extends JpaRepository<PersonEntity, Integer> {
 
-    List<Person> findAllByPersonName(String personName);
+    List<PersonEntity> findAllByPersonName(String personName);
 
-    List<Person> findAllByBirthDate(String birthDate);
+    List<PersonEntity> findAllByBirthDate(String birthDate);
 
     boolean existsByPersonName(String personName);
 

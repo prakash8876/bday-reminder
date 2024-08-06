@@ -9,6 +9,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
+import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
@@ -22,7 +23,7 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 @Configuration
 @Slf4j
-public class AppConfig implements ApplicationRunner {
+public class AppConfig implements CommandLineRunner {
 
     ReadWriteLock readWriteLock = new ReentrantReadWriteLock(true);
 
@@ -43,7 +44,7 @@ public class AppConfig implements ApplicationRunner {
     }
 
     @Override
-    public void run(ApplicationArguments args) throws Exception {
+    public void run(String... args) throws Exception {
         readWriteLock.readLock().lock();
         String file = ClassLoader.getSystemResource("dummy/dummy.csv").getFile();
         try (FileReader reader = new FileReader(file)) {

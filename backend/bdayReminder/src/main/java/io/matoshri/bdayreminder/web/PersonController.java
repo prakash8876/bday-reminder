@@ -1,6 +1,6 @@
 package io.matoshri.bdayreminder.web;
 
-import io.matoshri.bdayreminder.entity.Person;
+import io.matoshri.bdayreminder.entity.PersonEntity;
 import io.matoshri.bdayreminder.entity.PersonRequest;
 import io.matoshri.bdayreminder.service.PersonService;
 import lombok.extern.slf4j.Slf4j;
@@ -26,7 +26,7 @@ public class PersonController {
 
     @PostMapping(value = "/save")
     @ResponseStatus(HttpStatus.CREATED)
-    Person saveNewBirthdayPerson(@RequestBody @Valid PersonRequest personRequest) {
+    PersonEntity saveNewBirthdayPerson(@RequestBody @Valid PersonRequest personRequest) {
         try {
             return CompletableFuture.supplyAsync(() -> service.saveNewBirthdayPerson(personRequest)).get();
         } catch (InterruptedException | ExecutionException e) {
@@ -38,7 +38,7 @@ public class PersonController {
 
     @GetMapping(value = "/all")
     @ResponseStatus(HttpStatus.OK)
-    List<Person> findAll() {
+    List<PersonEntity> findAll() {
         try {
             return CompletableFuture.supplyAsync(service::findAll).get();
         } catch (InterruptedException | ExecutionException e) {
@@ -50,7 +50,7 @@ public class PersonController {
 
     @GetMapping(value = "/find-by-name/{personName}")
     @ResponseStatus(HttpStatus.OK)
-    List<Person> findAllByPersonName(@PathVariable("personName") String personName) {
+    List<PersonEntity> findAllByPersonName(@PathVariable("personName") String personName) {
         try {
             return CompletableFuture.supplyAsync(() -> service.findAllByPersonName(personName)).get();
         } catch (InterruptedException | ExecutionException e) {
@@ -62,7 +62,7 @@ public class PersonController {
 
     @GetMapping(value = "/find-by-date/{birthDate}")
     @ResponseStatus(HttpStatus.OK)
-    List<Person> findAllByBirthDate(@PathVariable("birthDate") String birthDate) {
+    List<PersonEntity> findAllByBirthDate(@PathVariable("birthDate") String birthDate) {
         try {
             return CompletableFuture.supplyAsync(() -> service.findAllByBirthDate(birthDate)).get();
         } catch (InterruptedException | ExecutionException e) {
@@ -74,7 +74,7 @@ public class PersonController {
 
     @GetMapping(value = "/fetch-by-today")
     @ResponseStatus(HttpStatus.OK)
-    List<Person> findAllByBirthDate() {
+    List<PersonEntity> findAllByBirthDate() {
         try {
             return CompletableFuture.supplyAsync(service::findAllTodayBirthdayPersons).get();
         } catch (InterruptedException | ExecutionException e) {
@@ -86,7 +86,7 @@ public class PersonController {
 
     @GetMapping(value = "/fetch-by-upcoming")
     @ResponseStatus(HttpStatus.OK)
-    List<Person> findAllUpcomingBirthdayPersons() {
+    List<PersonEntity> findAllUpcomingBirthdayPersons() {
         try {
             return CompletableFuture.supplyAsync(service::findAllUpcomingBirthdayPersons).get();
         } catch (InterruptedException | ExecutionException e) {

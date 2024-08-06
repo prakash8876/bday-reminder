@@ -2,6 +2,7 @@ package io.matoshri.bdayreminder.util;
 
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.springframework.stereotype.Component;
 
 import java.nio.file.Files;
@@ -20,11 +21,11 @@ public class AppUtils {
     private AppUtils() {
     }
 
-    private static final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd");
-    private static final DateTimeFormatter monthDay = DateTimeFormatter.ofPattern("MM/dd");
+    public static final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd");
+    public static final DateTimeFormatter monthDay = DateTimeFormatter.ofPattern("MM/dd");
     private static final String[] HEADER = {"ID", "NAME", "DATE"};
-    private static final String CSV = ".csv";
-    private static final String JSON = ".json";
+    public static final String CSV = ".csv";
+    public static final String JSON = ".json";
 
     public static DateTimeFormatter getFormatter() {
         return formatter;
@@ -56,7 +57,7 @@ public class AppUtils {
                 Files.createFile(path);
             }
         } catch (Exception e) {
-            log.error("Exception", e);
+            log.error("Exception: {}", ExceptionUtils.getMessage(e), e);
         }
         return path;
     }
