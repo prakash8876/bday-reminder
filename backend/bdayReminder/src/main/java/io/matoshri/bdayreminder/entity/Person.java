@@ -2,15 +2,20 @@ package io.matoshri.bdayreminder.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.matoshri.bdayreminder.util.AppUtils;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 import java.time.LocalDate;
+import java.util.Objects;
 
 @Entity
 @Table(name = "PERSON_TBL")
 @Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class Person {
 
     @Id
@@ -45,5 +50,21 @@ public class Person {
                 ", personName='" + personName + '\'' +
                 ", birthDate='" + birthDate + '\'' +
                 '}';
+    }
+
+    @Override
+    public final boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Person)) return false;
+
+        Person person = (Person) o;
+        return Objects.equals(personName, person.personName) && Objects.equals(birthDate, person.birthDate);
+    }
+
+    @Override
+    public int hashCode() {
+        int result = Objects.hashCode(personName);
+        result = 31 * result + Objects.hashCode(birthDate);
+        return result;
     }
 }
