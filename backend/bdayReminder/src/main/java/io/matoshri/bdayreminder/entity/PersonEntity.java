@@ -11,25 +11,23 @@ import javax.persistence.*;
 import java.time.LocalDate;
 import java.util.Objects;
 
-@Entity
-@Table(name = "PERSON_TBL")
+@Getter
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@Entity
+@Table(name = "PERSON_TBL")
 public class PersonEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "PERSON_ID", unique = true, updatable = false)
-    @Getter
     private int personId;
 
     @Column(name = "PERSON_NAME", length = 20, nullable = false)
-    @Getter
     private String personName;
 
     @Column(name = "BIRTH_DATE", length = 10, nullable = false)
-    @Getter
     private String birthDate;
 
     public String[] forCSV() {

@@ -2,7 +2,7 @@ server:
   port: 8082
 spring:
   application:
-    name: 'birthday-reminder-application'
+    name: 'birthday-reminder-app'
   datasource:
     driverClassName: 'org.h2.Driver'
     url: 'jdbc:h2:mem:bdaydb'

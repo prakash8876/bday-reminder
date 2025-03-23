@@ -8,4 +8,11 @@ public class DateParseException extends ApiException {
     public DateParseException(String message) {
         super(message);
     }
+
+    public DateParseException() {
+    }
+
+    public DateParseException(String message, Throwable cause) {
+        super(message, cause);
+    }
 }

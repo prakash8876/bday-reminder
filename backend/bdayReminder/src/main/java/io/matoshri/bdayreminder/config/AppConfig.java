@@ -7,8 +7,6 @@ import io.matoshri.bdayreminder.service.PersonService;
 import io.matoshri.bdayreminder.util.AppUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.ApplicationArguments;
-import org.springframework.boot.ApplicationRunner;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -23,7 +21,7 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 @Configuration
 @Slf4j
-public class AppConfig implements CommandLineRunner {
+public class AppConfig {
 
     ReadWriteLock readWriteLock = new ReentrantReadWriteLock(true);
 
@@ -43,22 +41,24 @@ public class AppConfig implements CommandLineRunner {
         return executor;
     }
 
-    @Override
-    public void run(String... args) throws Exception {
-        readWriteLock.readLock().lock();
-        String file = ClassLoader.getSystemResource("dummy/dummy.csv").getFile();
-        try (FileReader reader = new FileReader(file)) {
-            CSVReader csvReader = new CSVReaderBuilder(reader).withSkipLines(1).build();
-            String[] lines;
-            while ((lines = csvReader.readNext()) != null) {
-                var name = lines[0];
-                var localDate = LocalDate.parse(lines[1], DateTimeFormatter.ofPattern(PATTERN));
-                var date = localDate.format(AppUtils.getFormatter());
-                var request = new PersonRequest(0, name, date);
-                service.saveNewBirthdayPerson(request);
+    @Bean
+    public CommandLineRunner runner() {
+        return (args) -> {
+            readWriteLock.readLock().lock();
+            String file = ClassLoader.getSystemResource("dummy/dummy.csv").getFile();
+            try (FileReader reader = new FileReader(file);
+                 CSVReader csvReader = new CSVReaderBuilder(reader).withSkipLines(1).build()) {
+                String[] lines;
+                while ((lines = csvReader.readNext()) != null) {
+                    var name = lines[0];
+                    var localDate = LocalDate.parse(lines[1], DateTimeFormatter.ofPattern(PATTERN));
+                    var date = localDate.format(AppUtils.getFormatter());
+                    var request = new PersonRequest(0, name, date);
+                    service.saveNewBirthdayPerson(request);
+                }
+            } finally {
+                readWriteLock.readLock().unlock();
             }
-        } finally {
-            readWriteLock.readLock().unlock();
-        }
+        };
     }
 }
