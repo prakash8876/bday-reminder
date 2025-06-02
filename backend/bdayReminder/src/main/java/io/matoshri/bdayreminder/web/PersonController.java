@@ -4,6 +4,8 @@ import io.matoshri.bdayreminder.entity.PersonEntity;
 import io.matoshri.bdayreminder.entity.PersonRequest;
 import io.matoshri.bdayreminder.service.PersonService;
 import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
@@ -14,9 +16,10 @@ import java.util.concurrent.ExecutionException;
 
 @RestController
 @RequestMapping("/api/birthday")
-@Slf4j
 @CrossOrigin(value = "http://localhost:4200")
 public class PersonController {
+
+    private static final Logger log = LoggerFactory.getLogger(PersonController.class);
 
     final PersonService service;
 
